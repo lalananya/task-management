@@ -1,0 +1,48 @@
+package com.example.TaskManagement.controller;
+
+import com.example.TaskManagement.model.User;
+import com.example.TaskManagement.service.ConfigAppService;
+import com.example.TaskManagement.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin")
+public class AdminController {
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    ConfigAppService configAppService;
+
+    @GetMapping("/all-users")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            List<User> result = userService.getAllUsers();
+            if(!result.isEmpty()) {
+                return ResponseEntity.ok(result);
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
+        }
+    }
+
+    // create a path for creating admin user
+
+    @GetMapping("/clear-app-cache")
+    public ResponseEntity<?> clearAppCache() {
+        configAppService.init();
+        return ResponseEntity.status(HttpStatus.OK).body("Done");
+    }
+
+}
